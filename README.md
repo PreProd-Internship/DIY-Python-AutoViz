@@ -88,7 +88,7 @@ A mock dataset generated using [Mockaroo](https://mockaroo.com/) for learning pu
 - 🚍 Visualizing trip performance based on time of day and traffic conditions.
 - ⛽ Analyzing fuel efficiency in relation to traffic and weather.
 - 🚌 Identifying underperforming routes based on passenger count and delays.
-- 👨‍✈️ Comparing bus and driver performance to optimize staffing and assignments.
+- 🚦 Comparing bus and driver performance to optimize staffing and assignments.
 - ⏱️ Analyzing the correlation between delays and trip duration under different conditions.
 
 This dataset and business case provide a rich, real-world scenario that highlights the capabilities of AutoViz.
