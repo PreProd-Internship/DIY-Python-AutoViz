@@ -1,4 +1,4 @@
-# Exploratory Data Analysis using Python's AutoViz library
+# Automatic Data Visualization and Exploratory Data Analysis using Python's AutoViz library
 
 lorem ipsum dolor sit amet
 
@@ -14,10 +14,10 @@ lorem ipsum dolor sit amet
 
 ## ✨ Features
 
-- 📊 lorem ipsum dolor sit amet
-- 📈 lorem ipsum dolor sit amet
-- 📉 lorem ipsum dolor sit amet
-- 📑 lorem ipsum dolor sit amet
+- 📊 Generate comprehensive visualizations with minimal code.
+- 📈 Perform automated EDA on your datasets.
+- 📉 Identify patterns and trends in your data.
+- 📑 Create detailed visualiation reports for easy sharing.
 
 ## 🔧 Prerequisites
 
@@ -52,7 +52,7 @@ streamlit run source/app.py
 
 2. Access the web interface at `http://localhost:8501`
 
-3. Upload your CSV dataset and generate the EDA charts and reports!
+3. Provide your CSV file path, configure the parameters, and generate visualizations and EDA reports!
 
 ## 📁 Project Structure
 
@@ -60,9 +60,10 @@ streamlit run source/app.py
 DIY-Python-AutoViz/
     ├── data/
     │   └── urban_public_transporation.csv
+    ├── plots/
+    │   └── .gitignore
     ├── source/
     │   ├── app.py
-    │   ├── ???.py
     │   └── eda.py
     ├── .gitignore
     ├── LearnWithPrompts.md
@@ -80,9 +81,9 @@ A mock dataset generated using [Mockaroo](https://mockaroo.com/) for learning pu
 - `time_of_day`,
 - `bus_id`,
 - `weather`,
-- `delay`, and so on.
+- `delay_minutes`, and so on.
 
-> *Note: `delay` is the target variable (`target_column`) in this dataset. If you'd like, other fields like `number_of_passengers` or `fuel_consumption` could also be explored as alternative target variables for different perspectives.*
+> *Note: `delay_minutes` is the dependent variable (`dep_var`) in this dataset. If you'd like, other fields like `number_of_passengers` or `fuel_consumption` could also be explored as alternative target variables for different perspectives.*
 
 ### Use Cases in AutoViz:
 - 🚍 Visualizing trip performance based on time of day and traffic conditions.
