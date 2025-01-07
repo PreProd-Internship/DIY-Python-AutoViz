@@ -11,6 +11,7 @@
     # Version:
         # v1.0 Initial version. [Date: 27-12-2024]
         # v1.1 Added individual forms for all arguments and terminal output display during visualization generation. [Date: 03-01-2025]
+        # v1.2 Added success and error messages for setting arguments and handling user errors. [Date: 07-01-2025]
 
 # CODE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -25,8 +26,8 @@
 # Importing the necessary libraries
 import streamlit as st # For creating the web app
 import pandas as pd # For data manipulation
-import io # For input/output operations
-import sys # For capturing terminal output
+import io # For input/output operations. Comes with Python by default
+import sys # For capturing terminal output. Comes with Python by default
 
 # Importing the function to visualize the data
 from eda import visualize_data
@@ -58,10 +59,11 @@ with tab1:
         if st.form_submit_button("Ingest", use_container_width=True):
             # Display success or error message based on validity of the file path.
             try:
-                pd.read_csv(file_path) # If the file is found at the file path, only then the file path is considered valid.
-                st.success("File path is valid!", icon="✅")
-            except:
-                st.error("Invalid file path!", icon="❌")
+                data = pd.read_csv(file_path) # If the file is found at the file path, only then the file path is considered valid.
+                st.session_state.data = data  # Store the dataset in session state
+                st.success("File loaded successfully!", icon="✅")
+            except Exception as e:
+                st.error(f"Error loading file: {e}", icon="❌")
     
     # Form to display data configuration (number of rows, columns, and first 5 rows)
     with st.form(key="display_data"):
@@ -87,8 +89,8 @@ with tab2:
     with st.form(key="separator"):
         st.subheader("Separator")
         sep = st.text_input("Enter the separator used in the dataset",
-                                placeholder=",",
-                                help="Enter the delimiter used in the dataset (default is ',').")
+                            value=",",
+                            help="This is the delimiter used in the dataset to separate the columns (default is ',').")
         
         if st.form_submit_button("Set", use_container_width=True):
             # Display success or error message based on the separator being set.
@@ -100,11 +102,12 @@ with tab2:
     # Dependent Variable (Target)
     with st.form(key="dependent_variable"):
         st.subheader("Dependent Variable")
-        # Choosing the dependent variable is a drop down menu with the column names of the dataset.
+        # Choosing the dependent variable is a drop-down menu with the column names of the dataset.
         # This argument is optional, so the user can choose to not set it.
-        dep_var = st.selectbox("Select the dependent variable",
+        dep_var = st.selectbox("Select the dependent variable.",
                                 options=[""] + (list(st.session_state.data.columns) if st.session_state.data is not None else []),
-                                help="Select the dependent variable from the dataset.")
+                                help="This is the target variable from the dataset.")
+        st.info("This is optional and can be left blank.")
                                 
         if st.form_submit_button("Set", use_container_width=True):
             # Display success message for setting the dependent variable only if it is valid.
@@ -118,7 +121,7 @@ with tab2:
         st.subheader("Header")
         header = st.number_input("Enter the row number to use as the column names",
                                 value=0,
-                                help="Enter the row number to use as the column names (default is 0).")
+                                help="This is the row number to use as the column names (default is 0).")
         
         if st.form_submit_button("Set", use_container_width=True):
             # Display success message for setting the header only if it is valid.
@@ -133,7 +136,7 @@ with tab2:
         verbose = st.selectbox("Select the verbosity level",
                                 options=[0, 1, 2],
                                 index=0,
-                                help="Select the verbosity level (0: no messages, 1: messages, 2: detailed messages).")
+                                help="0: no messages, 1: messages, 2: detailed messages")
         
         if st.form_submit_button("Set", use_container_width=True):
             # Display success message for setting the verbose level only if it is valid.
@@ -158,10 +161,23 @@ with tab2:
     # Chart Format (Format of the Charts: SVG, PNG, JPG, Bokeh, Server, HTML)
     with st.form(key="chart_format"):
         st.subheader("Chart Format")
-        # Chart format should be a drop down with default value of 'svg'.
+
+        st.expander("About the Different Chart Formats", expanded=False).markdown(
+            """
+            - **SVG**: Scalable Vector Graphics format.
+            - **PNG**: Portable Network Graphics format.
+            - **JPG**: Joint Photographic Experts Group format.
+            - **Bokeh**: Bokeh interactive plots.
+            - **Server**: Server-side rendering of plots.
+            - **HTML**: HTML format.
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Chart format drop-down with default value of 'html'.
         chart_format = st.selectbox("Select the format of the charts",
                                     options=['svg', 'png', 'jpg', 'bokeh', 'server', 'html'],
-                                    index=3,
+                                    index=5,
                                     help="Select the format of the charts ('svg', 'png', 'jpg', 'bokeh', 'server', or 'html').")
         
         if st.form_submit_button("Set", use_container_width=True):
@@ -176,7 +192,7 @@ with tab2:
         st.subheader("Max Rows Analyzed")
         max_rows_analyzed = st.number_input("Enter the maximum number of rows to be analyzed",
                                             value=150000,
-                                            help="Enter the maximum number of rows to be analyzed (default is 150000).")
+                                            help="This is to make the analysis faster by limiting the number of rows to be analyzed (default is 150000).")
         
         if st.form_submit_button("Set", use_container_width=True):
             # Display success message for setting the maximum rows only if it is valid.
@@ -190,7 +206,7 @@ with tab2:
         st.subheader("Max Columns Analyzed")
         max_cols_analyzed = st.number_input("Enter the maximum number of columns to be analyzed",
                                             value=30,
-                                            help="Enter the maximum number of columns to be analyzed (default is 30).")
+                                            help="This is to make the analysis faster by limiting the number of columns to be analyzed (default is 30).")
         
         if st.form_submit_button("Set", use_container_width=True):
             # Display success message for setting the maximum columns only if it is valid.
@@ -204,7 +220,7 @@ with tab2:
         st.subheader("Save Directory")
         save_dir = st.text_input("Enter the directory to save the plots",
                                 value="plots",
-                                help="Enter the directory to save the plots (default is 'plots').")
+                                help="This is where the plots, if any, will be saved (default is 'plots').")
         
         if st.form_submit_button("Set", use_container_width=True):
             # Display success message for setting the save directory only if it is valid.
@@ -220,6 +236,10 @@ with tab2:
         # Button to generate and display visualizations
         if st.form_submit_button("Generate Visualizations", use_container_width=True):
             try:
+                # Check if dataset is loaded in session state
+                if "data" not in st.session_state or st.session_state.data is None:
+                    raise ValueError("No dataset loaded. Please load a dataset first.")
+
                 # Retrieve all user inputs
                 data = st.session_state.data
                 arguments = {
@@ -235,17 +255,23 @@ with tab2:
                     "save_dir": save_dir,  # Directory to save the plots
                 }
 
+                # Validate required arguments
+                required_args = [file_path, sep, chart_format, save_dir]
+                if any(arg is None or arg == "" for arg in required_args):
+                    raise ValueError("One or more required arguments are missing. Please check your inputs.")
+
                 # Redirect stdout to capture terminal output
                 output_buffer = io.StringIO()
+                original_stdout = sys.stdout  # Save original stdout for restoration
                 sys.stdout = output_buffer
 
-                # Call the visualize_data function to generate visualizations
+                # Generate visualizations
                 st.info("Generating visualizations... This may take a moment.", icon="⏳")
                 visualize_data(**arguments)
                 st.success("Visualizations generated successfully!", icon="✅")
 
                 # Restore stdout to its original state
-                sys.stdout = sys.__stdout__
+                sys.stdout = original_stdout
 
                 # Get and display captured output from the terminal
                 terminal_output = output_buffer.getvalue()
@@ -256,10 +282,18 @@ with tab2:
                 # Display information about where the visualizations are saved
                 st.subheader("Generated Visualizations")
                 st.markdown(
-                    f"Visualizations saved to directory: `{save_dir}`. Please check the plots there or specify another directory to save them.",
+                    f"Visualizations saved to directory: `{save_dir}`, if required. Please check the plots there or specify another directory to save them.",
                     unsafe_allow_html=True,
                 )
+            except ValueError as ve:
+                # Handle specific user errors
+                st.error(f"Error: {ve}", icon="❌")
             except Exception as e:
-                # Restore stdout in case of an error
-                sys.stdout = sys.__stdout__
-                st.error(f"An error occurred: {e}", icon="❌")
+                # Restore stdout in case of an unexpected error
+                sys.stdout = original_stdout
+                st.error(f"An unexpected error occurred: {e}", icon="❌")
+            finally:
+                # Ensure stdout is restored even if an error occurs
+                sys.stdout = original_stdout
+                if 'output_buffer' in locals() and not output_buffer.closed:
+                    output_buffer.close()

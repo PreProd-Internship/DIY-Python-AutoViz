@@ -10,6 +10,7 @@
     # Version:
         # v1.0 Initial version. [Date: 27-12-2024]
         # v1.1 Refactored the visualize_data function for better readability and maintainability. [Date: 03-01-2025]
+        # v1.1.1 Made minor changes to the explanatory comments. [Date: 07-01-2025]
 
 # CODE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -22,9 +23,9 @@
 from autoviz import AutoViz_Class # For automatic visualization of data
 
 # Function to visualize the data
-def visualize_data(file_path, sep=',', dep_var='', df=None, header=0, verbose=0, lowess=False, chart_format='svg', max_rows_analyzed=150000, max_cols_analyzed=30, save_dir="plots"):
+def visualize_data(file_path, sep=',', dep_var='', df=None, header=0, verbose=0, lowess=False, chart_format='html', max_rows_analyzed=150000, max_cols_analyzed=30, save_dir="plots"):
     AV = AutoViz_Class() # Creating an instance of the AutoViz class
-    # %matplotlib inline # For displaying the plots inline
+    # %matplotlib inline # For displaying the plots inline in Jupyter Notebook
     df = AV.AutoViz(
         filename=file_path,                  # File path of the dataset to be visualized (if not provided, the 'df' parameter is used)
         sep=sep,                             # Delimiter used in the dataset (default is ',')
